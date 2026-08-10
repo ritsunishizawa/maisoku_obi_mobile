@@ -2,50 +2,48 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>帯変換ツール</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden}
+html,body{height:100%;overflow:hidden;position:fixed;width:100%}
 body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;background:#f5f5f7;color:#1a1a2e}
-.app{display:flex;flex-direction:column;height:100dvh;height:100vh}
 
 /* ヘッダー */
-.hdr{padding:12px 16px;background:#1a1a2e;color:#fff;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hdr{position:fixed;top:0;left:0;right:0;z-index:10;padding:12px 16px;padding-top:max(12px,env(safe-area-inset-top));background:#1a1a2e;color:#fff;display:flex;align-items:center;justify-content:space-between}
 .hdr h1{font-size:16px;font-weight:700}
-.hdr .status{font-size:11px;color:#8e93b8}
-
-/* メイン */
-.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
-
-/* 初期画面 */
-.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
-.welcome .icon{font-size:64px;margin-bottom:16px}
-.welcome h2{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
-.welcome p{font-size:13px;color:#888;margin-bottom:24px;line-height:1.5}
-.btn-select{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#4361ee;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;position:relative}
-.btn-select input{position:absolute;inset:0;opacity:0;cursor:pointer}
-
-/* プレビュー */
-.preview-area{flex:1;overflow:hidden;position:relative;background:#e8e8e8;display:none}
-.preview-scroll{width:100%;height:100%;overflow:auto;-webkit-overflow-scrolling:touch}
-.preview-stage{position:relative;display:inline-block;width:100%}
-.preview-stage canvas{display:block;width:100%}
-.cut-line{position:absolute;left:0;right:0;height:4px;background:#e63946;z-index:3;transform:translateY(-50%);touch-action:none}
-.cut-line::after{content:"⇕";position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#e63946;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
-.cut-label{position:absolute;left:8px;top:50%;transform:translateY(-50%);background:#e63946;color:#fff;padding:3px 10px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap}
-.zone-overlay{position:absolute;left:0;right:0;bottom:0;background:rgba(230,57,70,0.2);z-index:2;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:rgba(230,57,70,0.5)}
+.hdr .status{font-size:11px;color:#8e93b8;max-width:55%;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ボトムバー */
-.bottom-bar{padding:12px 16px;background:#fff;border-top:1px solid #e6e7ea;display:flex;gap:10px;align-items:center;flex-shrink:0}
-.btn-change{flex:1;padding:12px;background:#f0f2f5;color:#555;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;position:relative}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;z-index:10;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));background:#fff;border-top:1px solid #e6e7ea;display:flex;gap:10px;align-items:center}
+.btn-change{flex:1;padding:12px;background:#f0f2f5;color:#555;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;position:relative;text-align:center}
 .btn-change input{position:absolute;inset:0;opacity:0;cursor:pointer}
 .btn-export{flex:2;padding:12px;background:#2ec47a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer}
 .btn-export:disabled{opacity:0.4;cursor:not-allowed}
 .btn-export:active:not(:disabled){background:#28a564}
 
-/* 処理中オーバーレイ */
+/* メインコンテンツ */
+.main{position:fixed;top:48px;bottom:56px;left:0;right:0;overflow:hidden;display:flex;flex-direction:column}
+
+/* 初期画面 */
+.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+.welcome .icon{font-size:56px;margin-bottom:16px}
+.welcome h2{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
+.welcome p{font-size:13px;color:#888;margin-bottom:24px;line-height:1.6}
+.btn-select{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#4361ee;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;position:relative}
+.btn-select input{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+/* プレビュー */
+.preview-area{flex:1;overflow:auto;position:relative;background:#e8e8e8;display:none;-webkit-overflow-scrolling:touch}
+.preview-stage{position:relative;width:100%}
+.preview-stage canvas{display:block;width:100%}
+.cut-line{position:absolute;left:0;right:0;height:4px;background:#e63946;z-index:3;transform:translateY(-50%);touch-action:none;cursor:ns-resize}
+.cut-line::after{content:"⇕";position:absolute;right:8px;top:50%;transform:translateY(-50%);background:#e63946;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+.cut-label{position:absolute;left:8px;top:50%;transform:translateY(-50%);background:#e63946;color:#fff;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;white-space:nowrap}
+.zone-overlay{position:absolute;left:0;right:0;bottom:0;background:rgba(230,57,70,0.2);z-index:2;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:rgba(230,57,70,0.5)}
+
+/* ローディング */
 .loading{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center}
 .loading.show{display:flex}
 .loading-box{background:#fff;border-radius:16px;padding:28px 36px;text-align:center}
@@ -53,51 +51,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;bac
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-box p{font-size:13px;color:#555}
 
-/* 完了トースト */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:50;opacity:0;transition:opacity 0.3s;pointer-events:none}
+/* トースト */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;z-index:50;opacity:0;transition:opacity 0.3s;pointer-events:none;max-width:85%;text-align:center}
 .toast.show{opacity:1}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="hdr">
-    <h1>帯変換ツール</h1>
-    <span class="status" id="statusText">PDFを選択してください</span>
+
+<div class="hdr">
+  <h1>帯変換ツール</h1>
+  <span class="status" id="statusText">PDFを選択してください</span>
+</div>
+
+<div class="main">
+  <div class="welcome" id="welcomeScreen">
+    <div class="icon">📄</div>
+    <h2>マイソクの帯を変換</h2>
+    <p>他社PDFの帯を自社帯に差し替えます<br>PDFの1ページ目が対象です</p>
+    <label class="btn-select">
+      📂 PDFを選択
+      <input type="file" accept=".pdf,application/pdf" onchange="loadPdf(this)">
+    </label>
   </div>
 
-  <div class="main">
-    <!-- 初期画面 -->
-    <div class="welcome" id="welcomeScreen">
-      <div class="icon">📄</div>
-      <h2>マイソクの帯を変換</h2>
-      <p>他社PDFの帯を自社帯に差し替えます<br>PDFの1ページ目が対象です</p>
-      <label class="btn-select">
-        📂 PDFを選択
-        <input type="file" accept=".pdf,application/pdf" onchange="loadPdf(this)">
-      </label>
-    </div>
-
-    <!-- プレビュー -->
-    <div class="preview-area" id="previewArea">
-      <div class="preview-scroll" id="previewScroll">
-        <div class="preview-stage" id="previewStage">
-          <canvas id="pdfCanvas"></canvas>
-          <div class="zone-overlay" id="zoneOverlay">✕ 切り取り</div>
-          <div class="cut-line" id="cutLine">
-            <div class="cut-label" id="cutLabel">85.0%</div>
-          </div>
-        </div>
+  <div class="preview-area" id="previewArea">
+    <div class="preview-stage" id="previewStage">
+      <canvas id="pdfCanvas"></canvas>
+      <div class="zone-overlay" id="zoneOverlay">✕ 切り取り</div>
+      <div class="cut-line" id="cutLine">
+        <div class="cut-label" id="cutLabel">85.0%</div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="bottom-bar">
-    <label class="btn-change">
-      📄 別のPDF
-      <input type="file" accept=".pdf,application/pdf" onchange="loadPdf(this)">
-    </label>
-    <button class="btn-export" id="exportBtn" onclick="exportImage()" disabled>🖨 帯替えして保存</button>
-  </div>
+<div class="bottom-bar">
+  <label class="btn-change">
+    📄 別のPDF
+    <input type="file" accept=".pdf,application/pdf" onchange="loadPdf(this)">
+  </label>
+  <button class="btn-export" id="exportBtn" onclick="exportImage()" disabled>🖨 帯替えして保存</button>
 </div>
 
 <div class="loading" id="loadingOverlay">
@@ -109,8 +102,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;bac
 
 <div class="toast" id="toast"></div>
 
-<!-- pdf.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs" type="module"></script>
 <script type="module">
 import * as pdfjsLib from "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.min.mjs";
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
@@ -119,10 +110,8 @@ const OBI_SRC = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAgEBIAEgAAD/2wBDAAEBAQEB
 
 let cutRatio = 0.85;
 let pdfPageRendered = false;
-let canvasFullHeight = 0;
 let isDragging = false;
 
-// 帯画像をプリロード
 const obiImg = new Image();
 obiImg.src = OBI_SRC;
 
@@ -137,12 +126,10 @@ window.loadPdf = async function(input) {
     const pdf = await pdfjsLib.getDocument({data: buf}).promise;
     const page = await pdf.getPage(1);
 
-    // 高解像度でレンダリング（印刷品質）
     const viewport = page.getViewport({scale: 2.0});
     const canvas = document.getElementById("pdfCanvas");
     canvas.width = viewport.width;
     canvas.height = viewport.height;
-    canvasFullHeight = viewport.height;
     const ctx = canvas.getContext("2d");
     await page.render({canvasContext: ctx, viewport}).promise;
 
@@ -165,54 +152,39 @@ window.loadPdf = async function(input) {
 };
 
 function updateCutUI() {
-  const line = document.getElementById("cutLine");
-  const overlay = document.getElementById("zoneOverlay");
-  const label = document.getElementById("cutLabel");
-  line.style.top = (cutRatio * 100) + "%";
-  overlay.style.top = (cutRatio * 100) + "%";
-  overlay.style.height = ((1 - cutRatio) * 100) + "%";
-  label.textContent = (cutRatio * 100).toFixed(1) + "%";
+  document.getElementById("cutLine").style.top = (cutRatio * 100) + "%";
+  const ov = document.getElementById("zoneOverlay");
+  ov.style.top = (cutRatio * 100) + "%";
+  ov.style.height = ((1 - cutRatio) * 100) + "%";
+  document.getElementById("cutLabel").textContent = (cutRatio * 100).toFixed(1) + "%";
 }
 
-// ドラッグ（タッチ＋マウス両対応）
+function getY(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
+
 const cutLine = document.getElementById("cutLine");
+cutLine.addEventListener("mousedown", e => { e.preventDefault(); isDragging = true; });
+cutLine.addEventListener("touchstart", e => { e.preventDefault(); isDragging = true; }, {passive:false});
 
-function getY(e) {
-  return e.touches ? e.touches[0].clientY : e.clientY;
-}
+document.addEventListener("mousemove", onMove);
+document.addEventListener("touchmove", onMove, {passive:false});
+document.addEventListener("mouseup", () => { isDragging = false; });
+document.addEventListener("touchend", () => { isDragging = false; });
 
-function onDragStart(e) {
-  e.preventDefault();
-  isDragging = true;
-}
-
-function onDragMove(e) {
+function onMove(e) {
   if (!isDragging) return;
   e.preventDefault();
   const stage = document.getElementById("previewStage");
-  const rect = stage.getBoundingClientRect();
+  const canvas = document.getElementById("pdfCanvas");
+  const rect = canvas.getBoundingClientRect();
   let ratio = (getY(e) - rect.top) / rect.height;
   ratio = Math.max(0.3, Math.min(0.98, ratio));
   cutRatio = ratio;
   updateCutUI();
 }
 
-function onDragEnd() {
-  isDragging = false;
-}
-
-cutLine.addEventListener("mousedown", onDragStart);
-cutLine.addEventListener("touchstart", onDragStart, {passive: false});
-document.addEventListener("mousemove", onDragMove);
-document.addEventListener("touchmove", onDragMove, {passive: false});
-document.addEventListener("mouseup", onDragEnd);
-document.addEventListener("touchend", onDragEnd);
-
-// 出力
 window.exportImage = async function() {
   if (!pdfPageRendered) return;
   showLoading("画像を生成中...");
-
   await new Promise(r => setTimeout(r, 50));
 
   try {
@@ -220,36 +192,26 @@ window.exportImage = async function() {
     const srcW = srcCanvas.width;
     const srcH = srcCanvas.height;
     const cutY = Math.round(srcH * cutRatio);
-
-    // 帯のサイズ計算
     const obiAspect = obiImg.naturalWidth / obiImg.naturalHeight;
     const obiH = Math.round(srcW / obiAspect);
 
-    // 出力キャンバス
     const outCanvas = document.createElement("canvas");
     outCanvas.width = srcW;
     outCanvas.height = cutY + obiH;
     const ctx = outCanvas.getContext("2d");
-
-    // PDF部分（上部）
     ctx.drawImage(srcCanvas, 0, 0, srcW, cutY, 0, 0, srcW, cutY);
-
-    // 帯画像
     ctx.drawImage(obiImg, 0, cutY, srcW, obiH);
 
-    // JPEG出力してダウンロード
     outCanvas.toBlob(blob => {
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "帯替え後.jpg";
-
-      // iOS Safari対策：aタグクリックでダウンロードできない場合は新しいタブで開く
-      if (/iPhone|iPad/i.test(navigator.userAgent)) {
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         window.open(url, "_blank");
         hideLoading();
         showToast("画像が表示されました。長押しで保存してください");
       } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "帯替え後.jpg";
         a.click();
         hideLoading();
         showToast("✓ 保存しました");
@@ -263,13 +225,8 @@ window.exportImage = async function() {
   }
 };
 
-function showLoading(text) {
-  document.getElementById("loadingText").textContent = text;
-  document.getElementById("loadingOverlay").classList.add("show");
-}
-function hideLoading() {
-  document.getElementById("loadingOverlay").classList.remove("show");
-}
+function showLoading(t) { document.getElementById("loadingText").textContent=t; document.getElementById("loadingOverlay").classList.add("show"); }
+function hideLoading() { document.getElementById("loadingOverlay").classList.remove("show"); }
 function showToast(msg) {
   const t = document.getElementById("toast");
   t.textContent = msg;
