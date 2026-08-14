@@ -39,6 +39,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;bac
 .loading-box .spinner{width:36px;height:36px;border:3px solid #eee;border-top-color:#4361ee;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-box p{font-size:13px;color:#555}
+.obi-popup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90;align-items:center;justify-content:center;padding:20px}
+.obi-popup.show{display:flex}
+.obi-popup-inner{background:#fff;border-radius:12px;padding:16px;max-width:95%;max-height:80%;overflow:auto;text-align:center;position:relative}
+.obi-popup-inner img{max-width:100%;border-radius:6px;margin-bottom:8px}
+.obi-popup-inner .close{position:absolute;top:8px;right:12px;font-size:20px;color:#888;cursor:pointer;background:none;border:none}
+.obi-popup-inner p{font-size:11px;color:#888}
+.obi-status{padding:6px 12px;background:rgba(255,255,255,.08);border-radius:6px;font-size:11px;color:#8e93b8;cursor:pointer;display:flex;align-items:center;gap:4px}
+.obi-status.set{color:#2ec47a}
+.obi-status.unset{color:#ff9800;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:10px 20px;border-radius:10px;font-size:12px;font-weight:600;z-index:50;opacity:0;transition:opacity 0.3s;pointer-events:none;max-width:85%;text-align:center}
 .toast.show{opacity:1}
 </style>
@@ -47,7 +57,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;bac
 <div class="app" id="app">
   <div class="hdr">
     <h1>帯変換ツール</h1>
-    <span class="status" id="statusText">画像を選択してください</span>
+    <span class="obi-status unset" id="obiStatus" onclick="showObiPopup()">⚠ 帯未設定</span>
   </div>
   <div class="main">
     <div class="welcome" id="welcomeScreen">
@@ -84,6 +94,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;bac
 <div class="loading" id="loadingOverlay">
   <div class="loading-box"><div class="spinner"></div><p id="loadingText">処理中...</p></div>
 </div>
+<div class="obi-popup" id="obiPopup" onclick="hideObiPopup()">
+  <div class="obi-popup-inner" onclick="event.stopPropagation()">
+    <button class="close" onclick="hideObiPopup()">✕</button>
+    <div id="obiPopupContent"><p>帯画像が設定されていません</p></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -93,7 +109,7 @@ let cutRatio=0.85,isDragging=false,srcLoaded=false;
 const obiImg=new Image();
 let obiSrc=localStorage.getItem("customObi")||null;
 let obiReady=false;
-if(obiSrc){obiImg.src=obiSrc;obiReady=true}
+if(obiSrc){obiImg.src=obiSrc;obiReady=true;document.getElementById("obiStatus").className="obi-status set";document.getElementById("obiStatus").textContent="✓ 帯設定済み"}
 
 function setAppHeight(){document.documentElement.style.setProperty("--app-h",window.innerHeight+"px")}
 setAppHeight();
@@ -107,7 +123,7 @@ function changeObi(input){
   reader.onload=e=>{
     obiSrc=e.target.result;obiImg.src=obiSrc;obiReady=true;
     try{localStorage.setItem("customObi",obiSrc)}catch(err){}
-    showToast("✓ 帯画像を設定しました");
+    showToast("✓ 帯画像を設定しました");updateObiStatus();
     if(srcLoaded)document.getElementById("exportBtn").disabled=false;
   };
   reader.readAsDataURL(file);
@@ -197,6 +213,23 @@ function exportImage(){
       },"image/jpeg",0.92);
     }catch(e){hideLoading();showToast("エラーが発生しました");console.error(e)}
   },50);
+}
+
+function showObiPopup(){
+  const popup=document.getElementById("obiPopup");
+  const content=document.getElementById("obiPopupContent");
+  if(obiReady){
+    content.innerHTML='<p style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px">現在設定中の自社帯</p><img src="'+obiSrc+'" alt="帯画像"><p>タップで閉じる</p>';
+  }else{
+    content.innerHTML='<p style="font-size:13px;color:#888;padding:20px">帯画像が設定されていません<br><br>下部の「🎨 帯変更」ボタンから<br>帯画像を選択してください</p>';
+  }
+  popup.classList.add("show");
+}
+function hideObiPopup(){document.getElementById("obiPopup").classList.remove("show")}
+function updateObiStatus(){
+  const s=document.getElementById("obiStatus");
+  if(obiReady){s.className="obi-status set";s.textContent="✓ 帯設定済み"}
+  else{s.className="obi-status unset";s.textContent="⚠ 帯未設定"}
 }
 
 function showLoading(t){document.getElementById("loadingText").textContent=t;document.getElementById("loadingOverlay").classList.add("show")}
