@@ -143,7 +143,6 @@ function loadImage(input){
       document.getElementById("welcomeScreen").style.display="none";
       document.getElementById("previewArea").style.display="block";
       document.getElementById("exportBtn").disabled=!obiReady;
-      document.getElementById("statusText").textContent=file.name;
       hideLoading();
       if(!obiReady)showToast("帯画像を設定してください（🎨 帯変更ボタン）");
       else showToast("赤いバーをドラッグして切り取り位置を調整");
@@ -221,7 +220,7 @@ function showObiPopup(){
   const popup=document.getElementById("obiPopup");
   const content=document.getElementById("obiPopupContent");
   if(obiReady){
-    content.innerHTML='<p style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px">現在設定中の自社帯</p><img src="'+obiSrc+'" alt="帯画像"><p>タップで閉じる</p>';
+    content.innerHTML='<p style="font-size:12px;font-weight:600;color:#333;margin-bottom:8px">現在設定中の自社帯</p><img src="'+obiSrc+'" alt="帯画像">';
   }else{
     content.innerHTML='<p style="font-size:13px;color:#888;padding:20px">帯画像が設定されていません<br><br>下部の「🎨 帯変更」ボタンから<br>帯画像を選択してください</p>';
   }
